@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - Teacher Helper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">Teacher Helper</div>
+
+        <button id="menuButton" class="menu-button">
+            ☰
+        </button>
+
+        <nav id="mobileMenu" class="nav-menu">
+
+            <a href="teacher-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="teacher-register.html">
+                Register Student
+            </a>
+            <button
+    id="changePasswordButton"
+    class="button"
+    type="button"
+>
+    Change Password
+</button>
+
+            <button id="logoutButton" class="logout-button">
+                Logout
+            </button>
+
+        </nav>
+
+    </header>
+
+    <main class="dashboard">
+
+        <section class="dashboard-header">
+
+            <div>
+                <h1>Teacher Dashboard</h1>
+                <p>Manage your students from one place.</p>
+            </div>
+
+            <a
+                href="teacher-register.html"
+                class="button"
+            >
+                Register Student
+            </a>
+
+        </section>
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <h3>Total Students</h3>
+                <strong id="totalStudents">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3>Active Students</h3>
+                <strong id="activeStudents">0</strong>
+            </div>
+
+        </section>
+
+        <section class="table-section">
+
+            <div class="table-header">
+
+                <h2>Students</h2>
+
+                <input
+                    type="search"
+                    id="studentSearch"
+                    placeholder="Search students..."
+                >
+
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+    <tr>
+        <th>Student ID</th>
+        <th>Name</th>
+        <th>Grade</th>
+        <th>Subject</th>
+        <th>Phone</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+
+                    <tbody id="studentTableBody">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p id="emptyStudents" class="empty-message">
+                No students registered yet.
+            </p>
+
+        </section>
+        <section
+    id="changePasswordSection"
+    class="table-section"
+    style="display: none;"
+>
+    <h2>Change Password</h2>
+
+    <form id="changePasswordForm">
+
+        <label for="currentPassword">
+            Current Password
+        </label>
+
+        <input
+            type="password"
+            id="currentPassword"
+            name="currentPassword"
+            autocomplete="current-password"
+            required
+        >
+
+        <label for="newPassword">
+            New Password
+        </label>
+
+        <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            autocomplete="new-password"
+            minlength="6"
+            required
+        >
+
+        <label for="confirmPassword">
+            Confirm New Password
+        </label>
+
+        <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            autocomplete="new-password"
+            minlength="6"
+            required
+        >
+
+        <button
+            type="submit"
+            class="button"
+        >
+            Change Password
+        </button>
+
+        <p
+            id="passwordMessage"
+            class="message"
+        ></p>
+
+    </form>
+</section>
+
+    </main>
+
+    <script src="javascript.js"></script>
+</body>
+</html>

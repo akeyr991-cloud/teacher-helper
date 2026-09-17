@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register Student - Teacher Helper</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+
+        <div class="logo">
+            Teacher Helper
+        </div>
+
+        <button
+            id="menuButton"
+            class="menu-button"
+            type="button"
+        >
+            ☰
+        </button>
+
+        <nav
+            id="mobileMenu"
+            class="nav-menu"
+        >
+
+            <a href="teacher-dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="teacher-register.html">
+                Register Student
+            </a>
+
+            <button
+                id="logoutButton"
+                class="logout-button"
+                type="button"
+            >
+                Logout
+            </button>
+
+        </nav>
+
+    </header>
+
+    <main class="auth-container">
+        <label for="subject">
+    Subject
+</label>
+
+<select
+    id="subject"
+    name="subject"
+    required
+>
+    <option value="">
+        Select Subject
+    </option>
+
+    <option value="Mathematics">
+        Mathematics
+    </option>
+
+    <option value="English">
+        English
+    </option>
+
+    <option value="Science">
+        Science
+    </option>
+
+    <option value="Physics">
+        Physics
+    </option>
+
+    <option value="Chemistry">
+        Chemistry
+    </option>
+
+    <option value="Biology">
+        Biology
+    </option>
+
+    <option value="Computer Science">
+        Computer Science
+    </option>
+</select>
+
+        <div class="form-card">
+
+            <h1>Register Student</h1>
+
+            <p class="form-description">
+                Add a new student to the system.
+            </p>
+
+            <form id="studentForm">
+
+                <label for="studentId">
+                    Student ID
+                </label>
+
+                <input
+                    type="text"
+                    id="studentId"
+                    name="studentId"
+                    placeholder="Example: ST0001"
+                    autocomplete="off"
+                    required
+                >
+
+                <label for="studentName">
+                    Student Name
+                </label>
+
+                <input
+                    type="text"
+                    id="studentName"
+                    name="studentName"
+                    placeholder="Enter student name"
+                    autocomplete="name"
+                    required
+                >
+
+                <label for="grade">
+                    Grade
+                </label>
+
+                <select
+                    id="grade"
+                    name="grade"
+                    required
+                >
+
+                    <option value="">
+                        Select Grade
+                    </option>
+
+                    <option value="Grade 1">
+                        Grade 1
+                    </option>
+
+                    <option value="Grade 2">
+                        Grade 2
+                    </option>
+
+                    <option value="Grade 3">
+                        Grade 3
+                    </option>
+
+                    <option value="Grade 4">
+                        Grade 4
+                    </option>
+
+                    <option value="Grade 5">
+                        Grade 5
+                    </option>
+
+                    <option value="Grade 6">
+                        Grade 6
+                    </option>
+
+                    <option value="Grade 7">
+                        Grade 7
+                    </option>
+
+                    <option value="Grade 8">
+                        Grade 8
+                    </option>
+
+                    <option value="Grade 9">
+                        Grade 9
+                    </option>
+
+                    <option value="Grade 10">
+                        Grade 10
+                    </option>
+
+                    <option value="Grade 11">
+                        Grade 11
+                    </option>
+
+                    <option value="Grade 12">
+                        Grade 12
+                    </option>
+
+                </select>
+
+                <label for="phone">
+                    Phone
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    placeholder="Enter phone number"
+                    autocomplete="tel"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="button"
+                >
+                    Register Student
+                </button>
+
+                <p
+                    id="studentMessage"
+                    class="message"
+                ></p>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <script src="javascript.js"></script>
+
+</body>
+</html>

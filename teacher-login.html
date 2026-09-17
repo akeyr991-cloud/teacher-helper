@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Login - Teacher Helper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="logo">Teacher Helper</div>
+
+        <button id="menuButton" class="menu-button">☰</button>
+
+        <nav id="mobileMenu" class="nav-menu">
+            <a href="index.html">Home</a>
+            <a href="teacher-login.html">Teacher Login</a>
+        </nav>
+    </header>
+
+    <main class="auth-container">
+
+        <div class="auth-card">
+            <h1>Teacher Login</h1>
+
+           <form id="teacherLoginForm">
+
+    <label for="email">Email</label>
+
+    <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        autocomplete="username"
+        required
+    >
+
+    <label for="password">Password</label>
+
+    <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+    >
+
+    <button type="submit" class="button">
+        Login
+    </button>
+
+    <p id="loginMessage" class="message"></p>
+
+</form>
+        </div>
+
+    </main>
+
+    <script src="javascript.js"></script>
+</body>
+</html>
