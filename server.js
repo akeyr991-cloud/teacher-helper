@@ -9,8 +9,6 @@ dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -18,30 +16,27 @@ app.use(express.static(__dirname));
 
 const studentSchema = new mongoose.Schema(
     {
-        subject: {
-    type: String,
-    required: true,
-    trim: true
-},
         studentId: {
             type: String,
             required: true,
             unique: true,
             trim: true
         },
-
         name: {
             type: String,
             required: true,
             trim: true
         },
-
         grade: {
             type: String,
             required: true,
             trim: true
         },
-
+        subject: {
+            type: String,
+            required: true,
+            trim: true
+        },
         phone: {
             type: String,
             required: true,
@@ -62,7 +57,6 @@ const teacherSchema = new mongoose.Schema(
             lowercase: true,
             trim: true
         },
-
         password: {
             type: String,
             required: true
@@ -75,6 +69,26 @@ const teacherSchema = new mongoose.Schema(
 
 const Student = mongoose.model("Student", studentSchema);
 const Teacher = mongoose.model("Teacher", teacherSchema);
+
+let mongoConnection = null;
+
+async function connectDatabase() {
+    if (mongoConnection) {
+        return mongoConnection;
+    }
+
+    if (!process.env.MONGODB_URI) {
+        throw new Error("MONGODB_URI is missing.");
+    }
+
+    mongoConnection = mongoose.connect(process.env.MONGODB_URI);
+
+    await mongoConnection;
+
+    console.log("MongoDB connected successfully.");
+
+    return mongoConnection;
+}
 
 function createToken(teacher) {
     return jwt.sign(
@@ -122,14 +136,82 @@ function verifyTeacher(req, res, next) {
     }
 }
 
+async function createTeacherAccount() {
+    try {
+        const email = process.env.TEACHER_EMAIL;
+        const password = process.env.TEACHER_PASSWORD;
+
+        if (!email || !password) {
+            console.log(
+                "Teacher credentials are missing in environment variables."
+            );
+            return;
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+
+        const existingTeacher = await Teacher.findOne({
+            email: normalizedEmail
+        });
+
+        if (existingTeacher) {
+            console.log("Teacher account already exists.");
+            return;
+        }
+
+        const hashedPassword = await bcrypt.hash(
+            password,
+            10
+        );
+
+        await Teacher.create({
+            email: normalizedEmail,
+            password: hashedPassword
+        });
+
+        console.log("Teacher account created successfully.");
+    } catch (error) {
+        console.error(
+            "Teacher account creation failed:",
+            error.message
+        );
+    }
+}
+
 app.get("/", (req, res) => {
     res.sendFile(
         path.join(__dirname, "index.html")
     );
 });
 
+app.get("/teacher-login.html", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "teacher-login.html")
+    );
+});
+
+app.get("/teacher-dashboard.html", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "teacher-dashboard.html")
+    );
+});
+
+app.get("/teacher-register.html", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "teacher-register.html")
+    );
+});
+
+app.get("/change-password.html", (req, res) => {
+    res.sendFile(
+        path.join(__dirname, "change-password.html")
+    );
+});
+
 app.post("/api/teacher/login", async (req, res) => {
     try {
+        await connectDatabase();
+
         const { email, password } = req.body;
 
         if (!email || !password) {
@@ -174,58 +256,13 @@ app.post("/api/teacher/login", async (req, res) => {
     }
 });
 
-async function createTeacherAccount() {
-    try {
-        const email = process.env.TEACHER_EMAIL;
-        const password = process.env.TEACHER_PASSWORD;
-
-        if (!email || !password) {
-            console.log(
-                "Teacher credentials are missing in .env."
-            );
-            return;
-        }
-
-        const normalizedEmail = email
-            .toLowerCase()
-            .trim();
-
-        const existingTeacher = await Teacher.findOne({
-            email: normalizedEmail
-        });
-
-        if (existingTeacher) {
-            console.log(
-                "Teacher account already exists."
-            );
-            return;
-        }
-
-        const hashedPassword = await bcrypt.hash(
-            password,
-            10
-        );
-
-        await Teacher.create({
-            email: normalizedEmail,
-            password: hashedPassword
-        });
-
-        console.log(
-            "Teacher account created successfully."
-        );
-    } catch (error) {
-        console.error(
-            "Teacher account creation failed:",
-            error.message
-        );
-    }
-}
 app.put(
     "/api/teacher/change-password",
     verifyTeacher,
     async (req, res) => {
         try {
+            await connectDatabase();
+
             const {
                 currentPassword,
                 newPassword,
@@ -279,13 +316,11 @@ app.put(
                 });
             }
 
-            const hashedPassword =
+            teacher.password =
                 await bcrypt.hash(
                     newPassword,
                     10
                 );
-
-            teacher.password = hashedPassword;
 
             await teacher.save();
 
@@ -306,11 +341,14 @@ app.put(
         }
     }
 );
+
 app.get(
     "/api/students",
     verifyTeacher,
     async (req, res) => {
         try {
+            await connectDatabase();
+
             const students = await Student.find()
                 .sort({ createdAt: -1 });
 
@@ -322,7 +360,8 @@ app.get(
             );
 
             return res.status(500).json({
-                message: "Unable to load students."
+                message:
+                    "Unable to load students."
             });
         }
     }
@@ -333,32 +372,36 @@ app.post(
     verifyTeacher,
     async (req, res) => {
         try {
-            const {
-    studentId,
-    name,
-    grade,
-    subject,
-    phone
-} = req.body;
+            await connectDatabase();
 
-           if (
-    !studentId ||
-    !name ||
-    !grade ||
-    !subject ||
-    !phone
-) {
-    return res.status(400).json({
-        message: "All fields are required."
-    });
-}
+            const {
+                studentId,
+                name,
+                grade,
+                subject,
+                phone
+            } = req.body;
+
+            if (
+                !studentId ||
+                !name ||
+                !grade ||
+                !subject ||
+                !phone
+            ) {
+                return res.status(400).json({
+                    message:
+                        "All fields are required."
+                });
+            }
 
             const normalizedStudentId =
                 studentId.trim();
 
             const existingStudent =
                 await Student.findOne({
-                    studentId: normalizedStudentId
+                    studentId:
+                        normalizedStudentId
                 });
 
             if (existingStudent) {
@@ -368,13 +411,16 @@ app.post(
                 });
             }
 
-            const student = await Student.create({
-    studentId: normalizedStudentId,
-    name: name.trim(),
-    grade: grade.trim(),
-    subject: subject.trim(),
-    phone: phone.trim()
-});
+            const student =
+                await Student.create({
+                    studentId:
+                        normalizedStudentId,
+                    name: name.trim(),
+                    grade: grade.trim(),
+                    subject: subject.trim(),
+                    phone: phone.trim()
+                });
+
             return res.status(201).json({
                 message:
                     "Student registered successfully.",
@@ -399,13 +445,21 @@ app.put(
     verifyTeacher,
     async (req, res) => {
         try {
+            await connectDatabase();
+
             const {
                 name,
                 grade,
+                subject,
                 phone
             } = req.body;
 
-            if (!name || !grade || !phone) {
+            if (
+                !name ||
+                !grade ||
+                !subject ||
+                !phone
+            ) {
                 return res.status(400).json({
                     message:
                         "All fields are required."
@@ -418,6 +472,7 @@ app.put(
                     {
                         name: name.trim(),
                         grade: grade.trim(),
+                        subject: subject.trim(),
                         phone: phone.trim()
                     },
                     {
@@ -428,7 +483,8 @@ app.put(
 
             if (!student) {
                 return res.status(404).json({
-                    message: "Student not found."
+                    message:
+                        "Student not found."
                 });
             }
 
@@ -456,6 +512,8 @@ app.delete(
     verifyTeacher,
     async (req, res) => {
         try {
+            await connectDatabase();
+
             const student =
                 await Student.findByIdAndDelete(
                     req.params.id
@@ -463,7 +521,8 @@ app.delete(
 
             if (!student) {
                 return res.status(404).json({
-                    message: "Student not found."
+                    message:
+                        "Student not found."
                 });
             }
 
@@ -485,31 +544,28 @@ app.delete(
     }
 );
 
-async function startServer() {
+async function initializeDatabase() {
     try {
-        await mongoose.connect(
-            process.env.MONGODB_URI
-        );
-
-        console.log(
-            "MongoDB connected successfully."
-        );
-
+        await connectDatabase();
         await createTeacherAccount();
-
-        app.listen(PORT, () => {
-            console.log(
-                `Teacher Helper is running on port ${PORT}`
-            );
-        });
     } catch (error) {
         console.error(
-            "MongoDB connection failed:",
+            "Database initialization failed:",
             error.message
         );
-
-        process.exit(1);
     }
 }
 
-startServer();
+initializeDatabase();
+
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+
+    app.listen(PORT, () => {
+        console.log(
+            `Teacher Helper is running on port ${PORT}`
+        );
+    });
+}
+
+module.exports = app;
